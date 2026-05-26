@@ -129,6 +129,7 @@ class Cigger {
             }*/
         }
         console.log(cigs);
+        window.dispatchEvent(new CustomEvent('recuperaCigEnd', {}));
         this._exportToExcel(cigs);
     }
 
