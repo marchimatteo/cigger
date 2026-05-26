@@ -84,6 +84,18 @@ class Cigger {
                 cig.partecipanti = partecipantiArray.join(", ");
                 cig.partecipanti_cf = partecipantiCFArray.join(", ");
 
+                const cpvSource = data.scheda?.BANDO?.CPV ?? "";
+                const cpvCodArray = [];
+                const cpvDescArray = [];
+                if (cpvSource !== "") {
+                    for (let iCpv = 0; iCpv < cpvSource.length; iCpv++) {
+                        cpvCodArray.push(cpvSource[iCpv]?.COD_CPV ?? "");
+                        cpvDescArray.push(cpvSource[iCpv]?.DESCRIZIONE_CPV ?? "");
+                    }
+                }
+                cig.cpv = cpvCodArray.join(", ");
+                cig.cpv_desc = cpvDescArray.join(", ");
+
                 cig.data_pubblicazione = data.scheda?.PUBBLICAZIONI?.DATA_PUBBLICAZIONE ?? "";
                 if (cig.data_pubblicazione !== "") {
                     cig.data_pubblicazione = new Date(cig.data_pubblicazione);
@@ -100,6 +112,7 @@ class Cigger {
                 cig.numero_gara = data.scheda?.BANDO?.NUMERO_GARA ?? "";
                 cig.scheda = data.referenceExt?.cod_scheda_PCP ?? "";
                 cig.incaricato = data.scheda?.INCARICATI?.[0]?.CODICE_FISCALE ?? "";
+
 
                 cigs.push(cig);
                 console.log(cig);
