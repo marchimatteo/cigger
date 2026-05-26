@@ -9,49 +9,61 @@
 <body>
 
 <div class="container pt-4">
+    <div class="card">
+        <div class="card-header">
+            Scarica CIG
+        </div>
+        <div class="card-body">
+            <form id="form-get-cig">
+                <p>Data di pubblicazione:</p>
+                <div class="row">
+                    <div class="col-md-auto col-2 mb-2">
+                        <label for="input-range-inizio" class="col-form-label">Da</label>
+                    </div>
+                    <div class="col-md-auto col-10 mb-2">
+                        <input
+                                class="form-control"
+                                type="date"
+                                id="input-range-inizio"
+                                name="trip-start"
+                                max="9999-12-31"
+                                required
+                        />
+                    </div>
+                    <div class="col-md-auto col-2 mb-2">
+                        <label for="input-range-fine" class="col-form-label">A</label>
+                    </div>
+                    <div class="col-md-auto col-10 mb-2">
+                        <input
+                                class="form-control"
+                                type="date"
+                                id="input-range-fine"
+                                name="trip-start"
+                                max="9999-12-31"
+                                required
+                        />
+                    </div>
+                    <div class="col-md-auto col-12 text-end">
+                        <button type="submit" class="btn btn-primary mb-2" id="button-get-cig">
+                            Recupera CIG
+                            <span class="spinner-border spinner-border-sm" role="status" id="button-get-cig-spinner" hidden></span>
+                        </button>
+                        <button class="btn btn-secondary mb-2" disabled id="button-get-cig-new-new" hidden>Scarica excel</button>
+                    </div>
+                </div>
 
-    <form class="row" id="form-get-cig">
-        <p>Data di pubblicazione:</p>
-        <div class="col-md-auto col-2 mb-2">
-            <label for="input-range-inizio" class="col-form-label">Da</label>
-        </div>
-        <div class="col-md-auto col-10 mb-2">
-            <input
-                    class="form-control"
-                    type="date"
-                    id="input-range-inizio"
-                    name="trip-start"
-                    max="9999-12-31"
-                    required
-            />
-        </div>
-        <div class="col-md-auto col-2 mb-2">
-            <label for="input-range-fine" class="col-form-label">A</label>
-        </div>
-        <div class="col-md-auto col-10 mb-2">
-            <input
-                    class="form-control"
-                    type="date"
-                    id="input-range-fine"
-                    name="trip-start"
-                    max="9999-12-31"
-                    required
-            />
-        </div>
-        <div class="col-md-auto col-12 text-end">
-            <button type="submit" class="btn btn-primary mb-2" id="button-get-cig">Recupera CIG</button>
-        </div>
-    </form>
+                <div class="progress my-2" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar" style="width: 0%" id="progress-bar"></div>
+                </div>
 
-    <div class="progress my-2" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar" style="width: 0%" id="progress-bar"></div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <p>CIG da scaricare: <span id="counter-to-download">0</span></p>
-            <p>CIG scaricati: <span id="counter-downloaded">0</span></p>
-            <p>CIG andati in errore: <span id="counter-errored">0</span></p>
+                <div class="row">
+                    <div class="col-12">
+                        <p>CIG da scaricare: <span id="counter-to-download">0</span></p>
+                        <p>CIG scaricati: <span id="counter-downloaded">0</span></p>
+                        <p class="mb-0">CIG andati in errore: <span id="counter-errored">0</span></p>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -62,6 +74,11 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
 <script>
+    /**
+     * TODO:
+     * Fa funzionare pulsante scarica cig
+     */
+
     window.onload = async (event) => {
         const moduleLogger = await import ('./logger.js');
         const logger = new moduleLogger.Logger();

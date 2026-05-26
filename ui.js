@@ -14,6 +14,8 @@ class UI {
         /** @type {HTMLButtonElement} */
         this._elButtonGetCig = document.getElementById('button-get-cig');
         /** @type {HTMLSpanElement} */
+        this._elButtonGetCigSpinner = document.getElementById('button-get-cig-spinner');
+        /** @type {HTMLSpanElement} */
         this._elCounterToDownload = document.getElementById('counter-to-download');
         /** @type {HTMLSpanElement} */
         this._elCounterDownloaded = document.getElementById('counter-downloaded');
@@ -29,6 +31,7 @@ class UI {
                 new Date(this._elInputRangeFine.value)
             );
             this._elButtonGetCig.disabled = true;
+            this._elButtonGetCigSpinner.hidden = false;
         });
         window.addEventListener('updateCounterToDownload', () => {
             this._elCounterToDownload.innerText = `${Number(this._elCounterToDownload.innerText) + 1}`;
@@ -41,6 +44,9 @@ class UI {
             this._elCounterErrored.innerText = `${Number(this._elCounterErrored.innerText) + 1}`;
             this._updateProgressBar();
         });
+        window.addEventListener('recuperaCigEnd', () => {
+            this._elButtonGetCigSpinner.hidden = true;
+        })
     }
 
     _setProgressBar(value) {
