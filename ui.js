@@ -40,6 +40,7 @@ class UI {
          */
         this._elFormSeeCig.addEventListener('submit', (event) => {
             event.preventDefault();
+            this._elInputCigToSee.value = this._elInputCigToSee.value.toUpperCase();
 
             switch (event.submitter.id) {
                 case this._elButtonSeeCigPut.id:
