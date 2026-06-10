@@ -9,6 +9,40 @@
 <body>
 
 <div class="container pt-4">
+    <div class="card mb-3">
+        <div class="card-header">
+            Visualizza CIG
+        </div>
+        <div class="card-body pb-2">
+            <form id="form-see-cig">
+                <div class="row">
+                    <div class="col-md-auto col-2 mb-2">
+                        <label for="input-cig-to-see" class="col-form-label">CIG</label>
+                    </div>
+                    <div class="col-md-auto col-10 mb-2">
+                        <input
+                            class="form-control"
+                            type="text"
+                            id="input-cig-to-see"
+                            minlength="10"
+                            maxlength="10"
+                            required
+                        />
+                    </div>
+                    <div class="col-md-auto col-12 text-end">
+                        <button type="submit" class="btn btn-primary mb-2" id="button-see-cig-put">
+                            API PUT
+                            <span class="spinner-border spinner-border-sm" role="status" id="button-see-cig-put-spinner" hidden></span>
+                        </button>
+                        <button type="submit" class="btn btn-primary mb-2" id="button-see-cig-bdncp">
+                            BDNCP
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
             Scarica CIG

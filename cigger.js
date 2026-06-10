@@ -133,6 +133,28 @@ class Cigger {
         this._exportToExcel(cigs);
     }
 
+    /**
+     * @param {String} cig
+     * @return {Promise<String>}
+     */
+    async getAppaltoLinkFromCIG(cig) {
+        const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalto/cig/${cig}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const json = await response.json();
+
+        if (json.length === 0) {
+            throw new Error(`Appalto non trovato per il cig ${cig}`);
+        }
+        if (!json[0].hasOwnProperty('idAppalto')) {
+            throw new Error(`ID appalto non trovato per il cig ${cig}`);
+        }
+
+        return `https://put.anticorruzione.it/put/appalti/api/v1/appalto/${json[0].idAppalto}`;
+    }
+
     _exportToExcel (data) {
         // 1. Create a new workbook
         const workbook = this.xlsx.utils.book_new();
