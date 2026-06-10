@@ -6,6 +6,17 @@ class UI {
         this._cigger = cigger;
 
         /** @type {HTMLFormElement} */
+        this._elFormSeeCig = document.getElementById('form-see-cig');
+        /** @type {HTMLInputElement} */
+        this._elInputCigToSee = document.getElementById('input-cig-to-see');
+        /** @type {HTMLButtonElement} */
+        this._elButtonSeeCigPut = document.getElementById('button-see-cig-put');
+        /** @type {HTMLButtonElement} */
+        this._elButtonSeeCigBdncp = document.getElementById('button-see-cig-bdncp');
+        /** @type {HTMLSpanElement} */
+        this._elButtonSeeCigPutSpinner = document.getElementById('button-see-cig-put-spinner');
+
+        /** @type {HTMLFormElement} */
         this._elFormGetCig = document.getElementById('form-get-cig');
         /** @type {HTMLInputElement} */
         this._elInputRangeInizio = document.getElementById('input-range-inizio');
@@ -24,6 +35,31 @@ class UI {
         /** @type {HTMLDivElement} */
         this._elProgressBar = document.getElementById('progress-bar');
 
+        /**
+         * EVENTS RELATED TO VISUALIZZA CIG
+         */
+        this._elFormSeeCig.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            switch (event.submitter.id) {
+                case this._elButtonSeeCigPut.id:
+                    this._elButtonSeeCigPutSpinner.hidden = false;
+                    this._cigger.getAppaltoLinkFromCIG(this._elInputCigToSee.value)
+                        .then(link => window.open(link, '_blank', 'noreferrer'))
+                        .catch(error => alert(`Errore: ${error}`))
+                        .finally(() => this._elButtonSeeCigPutSpinner.hidden = true );
+                    break;
+                case this._elButtonSeeCigBdncp.id:
+                    window.open(`https://dettaglio-cig.anticorruzione.it/cig/${this._elInputCigToSee.value}`, '_blank', 'noreferrer');
+                    break;
+                default:
+                    alert('Errore, pulsante di visualizza CIG non identificato');
+            }
+        });
+
+        /**
+         * EVENTS RELATED TO SCARICA CIG
+         */
         this._elFormGetCig.addEventListener('submit', (event) => {
             event.preventDefault();
             this._cigger.getData(
