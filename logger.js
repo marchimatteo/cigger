@@ -1,6 +1,5 @@
 class Logger {
-    constructor(ui) {
-        this._ui = ui;
+    constructor() {
     }
 }
 

@@ -6,8 +6,9 @@ class Cigger {
     /**
      * @param {Date} inizio
      * @param {Date} fine
+     * @param {string[]} cfs
      */
-    async getData(inizio, fine) {
+    async getData(inizio, fine, cfs) {
         const start = Math.min(inizio.getFullYear(), fine.getFullYear());
         const end = Math.max(inizio.getFullYear(), fine.getFullYear());
         const yearList = Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -23,40 +24,20 @@ class Cigger {
         ) {
             filtraPerDataPubblicazione = false;
         }
-        console.log(filtraPerDataPubblicazione);
 
         // Prima ottiene la lista degli appalti
         const appalti = [];
         for (let iYear = 0; iYear < yearList.length; iYear++) {
             const year = yearList[iYear];
-            let currentPage = 0;
-            let pagineTotali = 1;
-            while (currentPage < pagineTotali) {
-                const data = await this._fetchAppalti(year, currentPage);
-                pagineTotali = data.pagineTotali;
 
-                // Exclude cig outside the user's desired range
-                for (const item of data.lista) {
-                    const dataPubbAppalto = item?.data_pubblicazione ?? "";
-                    if (
-                        filtraPerDataPubblicazione
-                        && dataPubbAppalto !== ""
-                        && !isNaN((new Date(dataPubbAppalto)).valueOf())
-                    ) {
-                        if (
-                            new Date(dataPubbAppalto) < inizio
-                            || new Date(dataPubbAppalto) > fine
-                        ) {
-                            continue;
-                        }
-                    }
-
-                    appalti.push(item);
-                    window.dispatchEvent(new CustomEvent('updateCounterToDownload', {}));
-                }
-
-                currentPage++;
-                await this._sleep(1000);
+            for (let iCF = 0; iCF < cfs.length; ++iCF) {
+                appalti.push(...await this._fetchAppaltiForYearCF(
+                    year,
+                    cfs[iCF],
+                    filtraPerDataPubblicazione,
+                    inizio,
+                    fine,
+                ));
             }
         }
 
@@ -170,12 +151,62 @@ class Cigger {
     };
 
     /**
+     * @param {string} year
+     * @param {string} cf
+     * @param {boolean} filtraPerDataPubblicazione
+     * @param {Date} inizio
+     * @param {Date} fine
+     */
+    async _fetchAppaltiForYearCF(
+        year,
+        cf,
+        filtraPerDataPubblicazione,
+        inizio,
+        fine
+    ) {
+        const appalti = [];
+
+        let currentPage = 0;
+        let pagineTotali = 1;
+        while (currentPage < pagineTotali) {
+            const data = await this._fetchAppaltiForYearPageCF(year, currentPage, cf);
+            pagineTotali = data.pagineTotali;
+
+            // Exclude cig outside the user's desired range
+            for (const item of data.lista) {
+                const dataPubbAppalto = item?.data_pubblicazione ?? "";
+                if (
+                    filtraPerDataPubblicazione
+                    && dataPubbAppalto !== ""
+                    && !isNaN((new Date(dataPubbAppalto)).valueOf())
+                ) {
+                    if (
+                        new Date(dataPubbAppalto) < inizio
+                        || new Date(dataPubbAppalto) > fine
+                    ) {
+                        continue;
+                    }
+                }
+
+                appalti.push(item);
+                window.dispatchEvent(new CustomEvent('updateCounterToDownload', {}));
+            }
+
+            currentPage++;
+            await this._sleep(1000);
+        }
+
+        return appalti;
+    }
+
+    /**
      * @param {String} anno
      * @param {Number} page
+     * @param {String} cf
      */
-    async _fetchAppalti(anno, page) {
+    async _fetchAppaltiForYearPageCF(anno, page, cf) {
         try {
-            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=00124430323&anno=${anno}&page=${page}&size=100&order=-1`);
+            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=${cf}&anno=${anno}&page=${page}&size=100&order=-1`);
 
             // Check if the request was successful
             if (!response.ok) {

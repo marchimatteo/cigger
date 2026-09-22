@@ -4,6 +4,7 @@ class UI {
      */
     constructor(cigger) {
         this._cigger = cigger;
+        this._stazioneAppaltanteInputForm = new StazioneAppaltanteInputForm(this);
 
         /** @type {HTMLFormElement} */
         this._elFormSeeCig = document.getElementById('form-see-cig');
@@ -18,6 +19,14 @@ class UI {
 
         /** @type {HTMLFormElement} */
         this._elFormGetCig = document.getElementById('form-get-cig');
+        /** @type {HTMLDivElement} */
+        this._elRowInputStazioneToAdd = document.getElementById('row-input-stazione-to-add');
+        /** @type {HTMLButtonElement} */
+        this._elButtonAddStazione = document.getElementById('button-add-stazione');
+        /** @type {HTMLInputElement} */
+        this._elInputStazioneToAdd = document.getElementById('input-stazione-to-add');
+        /** @type {() => NodeListOf<HTMLInputElement>} */
+        this._getElsInputStazioni = () => document.querySelectorAll('input.stazioni-appaltanti');
         /** @type {HTMLInputElement} */
         this._elInputRangeInizio = document.getElementById('input-range-inizio');
         /** @type {HTMLInputElement} */
@@ -34,6 +43,11 @@ class UI {
         this._elCounterErrored = document.getElementById('counter-errored');
         /** @type {HTMLDivElement} */
         this._elProgressBar = document.getElementById('progress-bar');
+
+        // Add by default at least Burlo
+        if (this._stazioneAppaltanteInputForm.isEmpty()) {
+            this._stazioneAppaltanteInputForm.createRow('00124430323');
+        }
 
         /**
          * EVENTS RELATED TO VISUALIZZA CIG
@@ -59,13 +73,41 @@ class UI {
         });
 
         /**
+         * EVENTS RELATED TO ADD STAZIONE APPALTANTE
+         */
+        this._elInputStazioneToAdd.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                this._elButtonAddStazione.click();
+            }
+        })
+        this._elButtonAddStazione.addEventListener('click', (event) => {
+            const value = this._elInputStazioneToAdd.value;
+            if (value.length < 2) {
+                alert('Codice fiscale troppo corto, non imbrogliare');
+
+                return;
+            }
+
+            this._stazioneAppaltanteInputForm.createRow(value);
+        });
+
+        /**
          * EVENTS RELATED TO SCARICA CIG
          */
         this._elFormGetCig.addEventListener('submit', (event) => {
             event.preventDefault();
+            const stazioni = this._stazioneAppaltanteInputForm.getCFs();
+            if (stazioni.length < 1) {
+                alert('Inserire almeno una stazione appaltante');
+
+                return;
+            }
+
             this._cigger.getData(
                 new Date(this._elInputRangeInizio.value),
-                new Date(this._elInputRangeFine.value)
+                new Date(this._elInputRangeFine.value),
+                stazioni,
             );
             this._elButtonGetCig.disabled = true;
             this._elButtonGetCigSpinner.hidden = false;
@@ -102,6 +144,92 @@ class UI {
      */
     showAlert(text) {
         alert(text);
+    }
+
+    /**
+     * @return {HTMLDivElement}
+     */
+    getRowInputStazioneToAdd() {
+        return this._elRowInputStazioneToAdd;
+    }
+
+    cleanInputStazioneToAdd() {
+        this._elInputStazioneToAdd.value = '';
+    }
+
+    /**
+     * @return {string[]}
+     */
+    getStazioniCF() {
+        return this._stazioneAppaltanteInputForm.getCFs();
+    }
+}
+
+class StazioneAppaltanteInputForm {
+    /**
+     * @param ui {UI}
+     */
+    constructor(ui) {
+        this._ui = ui;
+        this._els = {}
+    }
+
+    /**
+     * @return {boolean}
+     */
+    isEmpty() {
+        return Object.keys(this._els).length === 0;
+    }
+
+    /**
+     * @return {string[]}
+     */
+    getCFs() {
+        return Object.keys(this._els);
+    }
+
+    /**
+     *
+     * @param cf {string}
+     */
+    createRow(cf) {
+        if (cf in this._els) {
+            alert('Codice fiscale già presente');
+
+            return;
+        }
+
+        const newRow = document.createElement('div');
+        newRow.className = "row mb-2";
+
+        newRow.innerHTML = `
+            <div class="input-group">
+                <button class="btn btn-danger" type="button" id="button-remove-stazione-${cf}">Elimina</button>
+                <input
+                    type="text"
+                    id="input-stazione-${cf}"
+                    class="form-control stazioni-appaltanti"
+                    data-cf="${cf}"
+                    placeholder=""
+                    value="${cf}"
+                    aria-label="Stazioni appaltanti"
+                    disabled
+                >
+            </div>
+        `;
+
+        newRow.querySelector(`button#button-remove-stazione-${cf}`).addEventListener('click', (event) => {
+            this.removeRow(cf);
+        })
+
+        this._els[cf] = newRow;
+        this._ui.getRowInputStazioneToAdd().before(newRow);
+        this._ui.cleanInputStazioneToAdd();
+    }
+
+    removeRow(cf) {
+        this._els[cf].remove();
+        delete this._els[cf];
     }
 }
 
