@@ -110,6 +110,9 @@ class Cigger {
                 cig.oggetto_lotto = data.scheda?.BANDO?.OGGETTO_LOTTO ?? "";
                 cig.oggetto_contratto = data.scheda?.BANDO?.OGGETTO_PRINCIPALE_CONTRATTO ?? "";
                 cig.numero_gara = data.scheda?.BANDO?.NUMERO_GARA ?? "";
+                cig.cig_accordo_quadro = data.scheda?.BANDO?.CIG_ACCORDO_QUADRO ?? "";
+                cig.tipo_scelta_contraente = data.scheda?.BANDO?.TIPO_SCELTA_CONTRAENTE ?? "";
+                cig.modalita_realizzazione = data.scheda?.BANDO?.MODALITA_REALIZZAZIONE ?? "";
                 cig.scheda = data.referenceExt?.cod_scheda_PCP ?? "";
                 cig.incaricato = data.scheda?.INCARICATI?.[0]?.CODICE_FISCALE ?? "";
 
