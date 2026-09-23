@@ -178,7 +178,7 @@ class Cigger {
      */
     async _fetchAppalti(anno, page) {
         try {
-            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=00124430323&anno=${anno}&page=${page}&size=100&order=-1`);
+            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=00124430323&anno=${anno}&page=${page}&size=10000&order=-1`);
 
             // Check if the request was successful
             if (!response.ok) {
