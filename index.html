@@ -117,6 +117,8 @@
     window.onload = async (event) => {
         const moduleLogger = await import ('./logger.js');
         const logger = new moduleLogger.Logger();
+        const moduleModel = await import ('./model.js');
+        const model = new moduleModel.Model();
         const moduleCigger = await import('./cigger.js');
         const cigger = new moduleCigger.Cigger(XLSX);
         const moduleAnacApi = await import('./anac-api.js');
@@ -126,6 +128,18 @@
         const moduleStorageManager = await import ('./storage-manager.js');
         const storage = new moduleStorageManager.StorageManager(localforage);
     }
+
+    const Test = {}
+    async function loadTests() {
+        const moduleModel = await import ('./model.js');
+        const model = new moduleModel.Model();
+        const moduleTestModel = await import('./test/test_model.js');
+        Test.testModel = new moduleTestModel.TestModel(model);
+
+        console.log("tests loaded");
+    }
+
+
 </script>
 </body>
 </html>
