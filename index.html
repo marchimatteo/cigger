@@ -115,25 +115,30 @@
      */
 
     window.onload = async (event) => {
-        const moduleLogger = await import ('./logger.js');
-        const logger = new moduleLogger.Logger();
-        const moduleModel = await import ('./model.js');
-        const model = new moduleModel.Model();
-        const moduleCigger = await import('./cigger.js');
-        const cigger = new moduleCigger.Cigger(XLSX);
-        const moduleAnacApi = await import('./anac-api.js');
-        const api = new moduleAnacApi.AnacApi();
-        const moduleUI = await import('./ui.js');
-        const ui = new moduleUI.UI(cigger);
-        const moduleStorageManager = await import ('./storage-manager.js');
-        const storage = new moduleStorageManager.StorageManager(localforage);
+        const moduleServiceContainer = await import("./service-container.js");
+        const container = new moduleServiceContainer.ServiceContainer(XLSX);
+
+        //const moduleLogger = await import ('./logger.js');
+        //const logger = new moduleLogger.Logger();
+        const model = container.getModel();
+        const cigger = container.getCigger();
+        const ui = container.getUI();
+        //const moduleAnacApi = await import('./anac-api.js');
+        //const api = new moduleAnacApi.AnacApi();
+        //const moduleStorageManager = await import ('./storage-manager.js');
+        //const storage = new moduleStorageManager.StorageManager(localforage);
     }
 
     const Test = {}
     async function loadTests() {
+        const moduleServiceContainer = await import("./service-container.js");
+        const container = new moduleServiceContainer.ServiceContainer(XLSX);
+        const moduleTestServiceContainer = await import ('./test/test-service-container.js');
+        Test.testServiceContainer = new moduleTestServiceContainer.TestServiceContainer(container);
+
         const moduleModel = await import ('./model.js');
         const model = new moduleModel.Model();
-        const moduleTestModel = await import('./test/test_model.js');
+        const moduleTestModel = await import('./test/test-model.js');
         Test.testModel = new moduleTestModel.TestModel(model);
 
         console.log("tests loaded");
