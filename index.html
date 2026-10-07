@@ -136,6 +136,9 @@
         const moduleTestServiceContainer = await import ('./test/test-service-container.js');
         Test.testServiceContainer = new moduleTestServiceContainer.TestServiceContainer(container);
 
+        const moduleTestAnacApi = await import("./test/test-anac-api.js");
+        Test.testAnacApi = new moduleTestAnacApi.TestAnacApi(container.getAnacApi());
+
         const moduleModel = await import ('./model.js');
         const model = new moduleModel.Model();
         const moduleTestModel = await import('./test/test-model.js');

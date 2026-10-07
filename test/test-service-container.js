@@ -1,3 +1,4 @@
+import { AnacApi } from "../anac-api.js";
 import { Cigger } from "../cigger.js";
 import { Model } from "../model.js";
 import { UI } from "../ui.js";
@@ -18,6 +19,11 @@ class TestServiceContainer {
     testServiceCreation() {
         const testServiceCreationResult = " Test service creation";
         try {
+            this._container.clear();
+            if (!(this._container.getAnacApi() instanceof AnacApi)) {
+                throw new Error();
+            }
+
             this._container.clear();
             if (!(this._container.getModel() instanceof Model)) {
                 throw new Error();

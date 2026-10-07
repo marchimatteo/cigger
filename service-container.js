@@ -1,9 +1,11 @@
+import { AnacApi } from "./anac-api.js";
 import { Cigger } from "./cigger.js";
 import { Model } from "./model.js";
 import { UI } from "./ui.js";
 
 class ServiceContainer {
     constructor(xlsxLib) {
+        this._anacApi = null;
         this._cigger = null;
         this._model = null;
         this._ui = null;
@@ -15,6 +17,13 @@ class ServiceContainer {
         this._cigger = null;
         this._model = null;
         this._ui = null;
+    }
+
+    /** @returns {AnacApi} */
+    getAnacApi() {
+        if (!this._anacApi) { this._anacApi = new AnacApi(window.fetch) }
+
+        return this._anacApi;
     }
 
     /** @returns {Model} */
