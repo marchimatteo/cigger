@@ -1,13 +1,15 @@
 class Cigger {
-    constructor(xlsxLib) {
+    constructor(xlsxLib, storageManager) {
         this.xlsx = xlsxLib;
+        this._storageManager = storageManager;
     }
 
     /**
      * @param {Date} inizio
      * @param {Date} fine
+     * @param {boolean} useCache
      */
-    async getData(inizio, fine) {
+    async getData(inizio, fine, useCache) {
         const start = Math.min(inizio.getFullYear(), fine.getFullYear());
         const end = Math.max(inizio.getFullYear(), fine.getFullYear());
         const yearList = Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -63,13 +65,11 @@ class Cigger {
         // Poi scarica ogni singolo appalto
         const cigs = [];
         for (let iAppalti = 0; iAppalti < appalti.length; iAppalti++) {
-            await this._sleep(1000);
-
             const cig = {}
             const idAppalto = appalti[iAppalti]._id;
 
             try {
-                const data = await this._fetchAppalto(idAppalto);
+                const data = await this._fetchAppalto(idAppalto, useCache);
                 cig.cig = data.scheda?.BANDO?.CIG ?? "";
 
                 const partecipantiSource = data.scheda?.PARTECIPANTI ?? "";
@@ -193,17 +193,40 @@ class Cigger {
 
     /**
      * @param {String} appalto
+     * @param {boolean} useCacheForAppalto
      */
-    async _fetchAppalto(appalto) {
+    async _fetchAppalto(appalto, useCacheForAppalto) {
+        const url = `https://put.anticorruzione.it/put/appalti/api/v1/appalto/${appalto}`;
+
+        if (useCacheForAppalto) {
+            try {
+                const cachedResponse = await this._storageManager.getWebCacheItem(url);
+                if (cachedResponse !== null) {
+                    return cachedResponse;
+                }
+            } catch (error) {
+                console.error('Error while trying to retrieve a cached response inside _fetchAppalto:', error);
+            }
+        }
+
+        await this._sleep(1000);
         try {
-            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalto/${appalto}`);
+            const response = await fetch(url);
 
             // Check if the request was successful
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const responseJson = await response.json();
+            try {
+                this._storageManager.setWebCacheItem(url, responseJson);
+            } catch (error) {
+                console.error('Error while trying to cache a response inside _fetchAppalto:', error);
+            }
+
+
+            return responseJson;
         } catch (error) {
             console.error('Batch of bad news:', error);
         }

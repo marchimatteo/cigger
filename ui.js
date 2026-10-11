@@ -19,6 +19,8 @@ class UI {
         /** @type {HTMLFormElement} */
         this._elFormGetCig = document.getElementById('form-get-cig');
         /** @type {HTMLInputElement} */
+        this._elInputUsaCache = document.getElementById('input-usa-cache');
+        /** @type {HTMLInputElement} */
         this._elInputRangeInizio = document.getElementById('input-range-inizio');
         /** @type {HTMLInputElement} */
         this._elInputRangeFine = document.getElementById('input-range-fine');
@@ -61,11 +63,23 @@ class UI {
         /**
          * EVENTS RELATED TO SCARICA CIG
          */
+        this._elInputUsaCache.addEventListener('click', (event) => {
+            if (navigator.storage && navigator.storage.persist) {
+                navigator.storage.persist().then((persistent) => {
+                    if (persistent) {
+                        console.log("Storage will not be cleared except by explicit user action");
+                    } else {
+                        console.log("Storage may be cleared by the UA under storage pressure.");
+                    }
+                });
+            }
+        });
         this._elFormGetCig.addEventListener('submit', (event) => {
             event.preventDefault();
             this._cigger.getData(
                 new Date(this._elInputRangeInizio.value),
-                new Date(this._elInputRangeFine.value)
+                new Date(this._elInputRangeFine.value),
+                this._elInputUsaCache.checked,
             );
             this._elButtonGetCig.disabled = true;
             this._elButtonGetCigSpinner.hidden = false;
