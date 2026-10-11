@@ -1,20 +1,31 @@
 import { Cigger } from "./cigger.js";
 import { Model } from "./model.js";
+import { StorageManager} from "./storage-manager.js";
 import { UI } from "./ui.js";
 
 class ServiceContainer {
-    constructor(xlsxLib) {
+    constructor(xlsxLib, localforageLib) {
         this._cigger = null;
         this._model = null;
+        this._storageManager = null;
         this._ui = null;
 
-        this.xlsxLib = xlsxLib;
+        this._xlsxLib = xlsxLib;
+        this._localforageLib = localforageLib;
     }
 
     clear() {
         this._cigger = null;
         this._model = null;
+        this._storageManager = null;
         this._ui = null;
+    }
+
+    /** @returns {Cigger} */
+    getCigger() {
+        if (!this._cigger) { this._cigger = new Cigger(this._xlsxLib, this.getStorageManager()); }
+
+        return this._cigger;
     }
 
     /** @returns {Model} */
@@ -24,11 +35,13 @@ class ServiceContainer {
         return this._model;
     }
 
-    /** @returns {Cigger} */
-    getCigger() {
-        if (!this._cigger) { this._cigger = new Cigger(this.xlsxLib); }
+    /**
+     * @return {StorageManager}
+     */
+    getStorageManager() {
+        if (!this._storageManager) { this._storageManager = new StorageManager(this._localforageLib); }
 
-        return this._cigger;
+        return this._storageManager;
     }
 
     /** @returns {UI} */

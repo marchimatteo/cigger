@@ -1,5 +1,6 @@
 import { Cigger } from "../cigger.js";
 import { Model } from "../model.js";
+import { StorageManager} from "../storage-manager.js";
 import { UI } from "../ui.js";
 
 class TestServiceContainer {
@@ -25,6 +26,11 @@ class TestServiceContainer {
 
             this._container.clear();
             if (!(this._container.getCigger() instanceof Cigger)) {
+                throw new Error();
+            }
+
+            this._container.clear();
+            if (!(this._container.getStorageManager() instanceof StorageManager)) {
                 throw new Error();
             }
 
