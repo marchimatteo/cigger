@@ -51,23 +51,26 @@
         </div>
         <div class="card-body">
             <form id="form-get-cig">
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" role="switch" id="input-usa-cache">
-                    <label class="form-check-label" for="input-usa-cache">
-                        Usa cache
+                <div class="mb-3 row">
+                    <label for="input-stazioni-appaltanti" class="col-md-2 col-form-label">
+                        Stazioni appaltanti
                         <i class="bi bi-info-circle text-muted ms-1"
                            data-bs-toggle="tooltip"
                            data-bs-placement="top"
-                           title="Per i CIG già scaricati precedentemente verrà usata la cache, mentre per quelli nuovi si interrogherà ANAC">
+                           title="Inserisci i codici fiscali delle Stazioni Appaltanti separati da punto e virgola">
                         </i>
                     </label>
-                </div>
-                <p>Data di pubblicazione:</p>
-                <div class="row">
-                    <div class="col-md-auto col-2 mb-2">
-                        <label for="input-range-inizio" class="col-form-label">Da</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="input-stazioni-appaltanti" value="00124430323" required>
                     </div>
-                    <div class="col-md-auto col-10 mb-2">
+                </div>
+
+                <div class="mb-3 row">
+                    <span class="col-md-2 col-form-label">Data di pubblicazione</span>
+                    <div class="col-md-auto col-2">
+                        <label for="input-range-inizio" class="col-form-label">da</label>
+                    </div>
+                    <div class="col-md-auto col-10">
                         <input
                                 class="form-control"
                                 type="date"
@@ -77,10 +80,10 @@
                                 required
                         />
                     </div>
-                    <div class="col-md-auto col-2 mb-2">
-                        <label for="input-range-fine" class="col-form-label">A</label>
+                    <div class="col-md-auto col-2">
+                        <label for="input-range-fine" class="col-form-label">a</label>
                     </div>
-                    <div class="col-md-auto col-10 mb-2">
+                    <div class="col-md-auto col-10">
                         <input
                                 class="form-control"
                                 type="date"
@@ -90,6 +93,26 @@
                                 required
                         />
                     </div>
+                </div>
+
+                <div class="mb-3 row align-items-center">
+                    <label for="input-usa-cache" class="col-md-2 col-form-label">
+                        Usa cache
+                        <i class="bi bi-info-circle text-muted ms-1"
+                           data-bs-toggle="tooltip"
+                           data-bs-placement="top"
+                           title="Per i CIG già scaricati precedentemente verrà usata la cache, mentre per quelli nuovi si interrogherà ANAC">
+                        </i>
+                    </label>
+                    <div class="col-md-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="input-usa-cache">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2"></div>
                     <div class="col-md-auto col-12 text-end">
                         <button type="submit" class="btn btn-primary mb-2" id="button-get-cig">
                             Recupera CIG
