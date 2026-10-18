@@ -19,6 +19,8 @@ class UI {
         /** @type {HTMLFormElement} */
         this._elFormGetCig = document.getElementById('form-get-cig');
         /** @type {HTMLInputElement} */
+        this._elInputStazioniAppaltanti = document.getElementById('input-stazioni-appaltanti');
+        /** @type {HTMLInputElement} */
         this._elInputUsaCache = document.getElementById('input-usa-cache');
         /** @type {HTMLInputElement} */
         this._elInputRangeInizio = document.getElementById('input-range-inizio');
@@ -80,6 +82,7 @@ class UI {
                 new Date(this._elInputRangeInizio.value),
                 new Date(this._elInputRangeFine.value),
                 this._elInputUsaCache.checked,
+                this._getStazioniAppaltanti(),
             );
             this._elButtonGetCig.disabled = true;
             this._elButtonGetCigSpinner.hidden = false;
@@ -109,6 +112,14 @@ class UI {
         const done = Number(this._elCounterDownloaded.innerText) + Number(this._elCounterErrored.innerText);
 
         this._setProgressBar(Math.floor(done*100/total));
+    }
+
+    /**
+     * @return {string[]}
+     * @private
+     */
+    _getStazioniAppaltanti() {
+        return this._elInputStazioniAppaltanti.value.split(';').map(item => item.trim());
     }
 
     /**

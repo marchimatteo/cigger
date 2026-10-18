@@ -8,8 +8,9 @@ class Cigger {
      * @param {Date} inizio
      * @param {Date} fine
      * @param {boolean} useCache
+     * @param {string[]} stazioniAppaltanti
      */
-    async getData(inizio, fine, useCache) {
+    async getData(inizio, fine, useCache, stazioniAppaltanti) {
         const start = Math.min(inizio.getFullYear(), fine.getFullYear());
         const end = Math.max(inizio.getFullYear(), fine.getFullYear());
         const yearList = Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -29,36 +30,38 @@ class Cigger {
 
         // Prima ottiene la lista degli appalti
         const appalti = [];
-        for (let iYear = 0; iYear < yearList.length; iYear++) {
-            const year = yearList[iYear];
-            let currentPage = 0;
-            let pagineTotali = 1;
-            while (currentPage < pagineTotali) {
-                const data = await this._fetchAppalti(year, currentPage);
-                pagineTotali = data.pagineTotali;
+        for (const stazioneAppaltante of stazioniAppaltanti) {
+            for (let iYear = 0; iYear < yearList.length; iYear++) {
+                const year = yearList[iYear];
+                let currentPage = 0;
+                let pagineTotali = 1;
+                while (currentPage < pagineTotali) {
+                    const data = await this._fetchAppalti(year, currentPage, stazioneAppaltante);
+                    pagineTotali = data.pagineTotali;
 
-                // Exclude cig outside the user's desired range
-                for (const item of data.lista) {
-                    const dataPubbAppalto = item?.data_pubblicazione ?? "";
-                    if (
-                        filtraPerDataPubblicazione
-                        && dataPubbAppalto !== ""
-                        && !isNaN((new Date(dataPubbAppalto)).valueOf())
-                    ) {
+                    // Exclude cig outside the user's desired range
+                    for (const item of data.lista) {
+                        const dataPubbAppalto = item?.data_pubblicazione ?? "";
                         if (
-                            new Date(dataPubbAppalto) < inizio
-                            || new Date(dataPubbAppalto) > fine
+                            filtraPerDataPubblicazione
+                            && dataPubbAppalto !== ""
+                            && !isNaN((new Date(dataPubbAppalto)).valueOf())
                         ) {
-                            continue;
+                            if (
+                                new Date(dataPubbAppalto) < inizio
+                                || new Date(dataPubbAppalto) > fine
+                            ) {
+                                continue;
+                            }
                         }
+
+                        appalti.push(item);
+                        window.dispatchEvent(new CustomEvent('updateCounterToDownload', {}));
                     }
 
-                    appalti.push(item);
-                    window.dispatchEvent(new CustomEvent('updateCounterToDownload', {}));
+                    currentPage++;
+                    await this._sleep(1000);
                 }
-
-                currentPage++;
-                await this._sleep(1000);
             }
         }
 
@@ -115,6 +118,7 @@ class Cigger {
                 cig.modalita_realizzazione = data.scheda?.BANDO?.MODALITA_REALIZZAZIONE ?? "";
                 cig.scheda = data.referenceExt?.cod_scheda_PCP ?? "";
                 cig.incaricato = data.scheda?.INCARICATI?.[0]?.CODICE_FISCALE ?? "";
+                cig.stazione_appaltante = data.scheda?.STAZIONE_APPALTANTE?.DENOMINAZIONE_AMMINISTRAZIONE_APPALTANTE ?? "";
 
 
                 cigs.push(cig);
@@ -175,10 +179,11 @@ class Cigger {
     /**
      * @param {String} anno
      * @param {Number} page
+     * @param {string} stazioneAppaltante
      */
-    async _fetchAppalti(anno, page) {
+    async _fetchAppalti(anno, page, stazioneAppaltante) {
         try {
-            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=00124430323&anno=${anno}&page=${page}&size=10000&order=-1`);
+            const response = await fetch(`https://put.anticorruzione.it/put/appalti/api/v1/appalti?codiceFiscaleEnte=${stazioneAppaltante}&anno=${anno}&page=${page}&size=10000&order=-1`);
 
             // Check if the request was successful
             if (!response.ok) {
